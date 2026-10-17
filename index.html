@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLEN in the browser</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1d1f21; --muted: #5f6368; --line: #dadce0;
+    --panel: #f6f7f9; --accent: #1a73e8; --tool: #eef3fb; --err: #b3261e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17181a; --fg: #e8eaed; --muted: #9aa0a6; --line: #3c4043;
+      --panel: #202124; --accent: #8ab4f8; --tool: #1f2a3a; --err: #f2b8b5;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17181a; --fg: #e8eaed; --muted: #9aa0a6; --line: #3c4043;
+    --panel: #202124; --accent: #8ab4f8; --tool: #1f2a3a; --err: #f2b8b5;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  p.lede { color: var(--muted); margin: 0 0 20px; }
+  fieldset { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 0 0 12px; background: var(--panel); }
+  legend { color: var(--muted); font-size: 0.85rem; padding: 0 4px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  label { display: flex; flex-direction: column; font-size: 0.85rem; color: var(--muted); gap: 2px; min-width: 0; }
+  input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-width: 0; }
+  button { background: var(--accent); color: var(--bg); border-color: var(--accent); cursor: pointer; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  #status { color: var(--muted); font-size: 0.9rem; margin: 8px 0 16px; min-height: 1.5em; }
+  #chat { display: flex; gap: 8px; margin-top: 12px; }
+  #chat input { flex: 1; }
+  .entry { margin: 10px 0; }
+  .entry .label { font-size: 0.8rem; color: var(--muted); }
+  .entry .body { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .entry.tool pre { background: var(--tool); padding: 8px; border-radius: 6px; margin: 2px 0 0; font-size: 0.85rem; white-space: pre-wrap; }
+  .entry.error .body { color: var(--err); }
+</style>
+</head>
+<body>
+<main>
+  <h1>GLEN in the browser</h1>
+  <p class="lede">The MCP data server runs as DuckDB-wasm in a Web Worker on this page. The agent reaches it over <code>postMessage</code>; only the model endpoint you give sees your questions.</p>
+
+  <fieldset>
+    <legend>Model and data</legend>
+    <div class="grid">
+      <label>OpenAI-compatible endpoint <input id="endpoint" value="https://openrouter.ai/api/v1"></label>
+      <label>Model <input id="model" placeholder="as named by your provider"></label>
+      <label>API key (kept in memory only) <input id="key" type="password" autocomplete="off"></label>
+      <label>County
+        <select id="county">
+          <option value="06001">Alameda</option>
+          <option value="06019">Fresno</option>
+          <option value="06037">Los Angeles</option>
+          <option value="06067">Sacramento</option>
+          <option value="06073">San Diego</option>
+          <option value="06075">San Francisco</option>
+        </select>
+      </label>
+    </div>
+    <p style="margin:10px 0 0"><button id="start" type="button">Start</button></p>
+  </fieldset>
+
+  <div id="status" role="status"></div>
+  <div id="log" aria-live="polite"></div>
+  <form id="chat">
+    <input id="question" placeholder="e.g. How many people live in disadvantaged communities?" autocomplete="off">
+    <button id="ask" type="submit" disabled>Ask</button>
+  </form>
+</main>
+<script type="module" src="src/app.js"></script>
+</body>
+</html>

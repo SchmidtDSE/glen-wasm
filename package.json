@@ -1,0 +1,20 @@
+{
+  "name": "glen-wasm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An MCP data server that runs in the browser: DuckDB-wasm in a Web Worker, reached by glen-harness over postMessage",
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@12.10.1",
+  "scripts": {
+    "test": "vitest run",
+    "build:vendor": "esbuild scripts/mcp-server-entry.js --bundle --format=esm --platform=browser --minify --legal-comments=eof --outfile=vendor/mcp-server-sdk.js",
+    "vendor:harness": "scripts/vendor-harness.sh",
+    "e2e": "node scripts/e2e.mjs"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.12.0",
+    "esbuild": "0.28.2",
+    "vitest": "^2.1.9"
+  }
+}
