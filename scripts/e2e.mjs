@@ -5,6 +5,11 @@
 // worker refuses SQL that reads a URL.
 //
 //   CHROME=/path/to/chrome node scripts/e2e.mjs [county]
+//   SITE_URL=https://schmidtdse.github.io/glen-wasm/ node scripts/e2e.mjs
+//
+// Against the deployed page, the checks up to the agent turn apply: Chrome
+// blocks a public https page from calling the scripted model on 127.0.0.1
+// (Private Network Access), as it would block any site probing localhost.
 //
 // Network: the page fetches DuckDB-wasm from jsDelivr and the county files
 // from source.coop, as it does for users.
@@ -100,7 +105,8 @@ try {
     await cdp('Runtime.enable');
     await cdp('Log.enable');
     await cdp('Page.enable');
-    await cdp('Page.navigate', { url: `http://127.0.0.1:${site}/?county=${COUNTY}` });
+    const base = process.env.SITE_URL ?? `http://127.0.0.1:${site}/`;
+    await cdp('Page.navigate', { url: `${base}?county=${COUNTY}` });
     // Module scripts, with their imports, have run once the document is complete.
     for (let i = 0; i < 100 && (await evaluate('document.readyState')) !== 'complete'; i++) {
         await new Promise(r => setTimeout(r, 100));
